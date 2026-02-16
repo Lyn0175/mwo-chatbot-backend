@@ -10,34 +10,50 @@ app.use(helmet());
 app.use(express.json({ limit: '50kb' }));
 
 // ✅ Allow only requests from your Wix site
-const ALLOWED_ORIGINS = new Set([
+// ✅ Allow your site + Wix domains (preview/editor/live)
+const ALLOWED_ORIGINS = [
   'https://mwo-prague.org',
   'https://www.mwo-prague.org',
-]);
+];
 
 function isAllowedOrigin(origin) {
-  if (!origin) return true;          // server-to-server / health checks
-  if (origin === 'null') return true; // wix/html embed sometimes
+  // Allow no Origin (Render health checks, curl)
+  if (!origin) return true;
 
-  if (ALLOWED_ORIGINS.has(origin)) return true;
+  // Wix HTML embeds can send Origin: "null"
+  if (origin === 'null') return true;
 
-  // Wix domains used by HTML components/iframes
-  if (origin.endsWith('.wixsite.com')) return true;
-  if (origin.endsWith('.wixstatic.com')) return true;
-  if (origin.endsWith('.parastorage.com')) return true;
-  if (origin.includes('wix.com')) return true;
+  // Your live site
+  if (ALLOWED_ORIGINS.includes(origin)) return true;
 
-  return false;
+  // Wix / Editor / Preview domains
+  const allowedPatterns = [
+    /\.wixsite\.com$/i,
+    /\.wix\.com$/i,
+    /\.wixstatic\.com$/i,
+    /\.parastorage\.com$/i,
+  ];
+
+  try {
+    const host = new URL(origin).host;
+    return allowedPatterns.some((re) => re.test(host));
+  } catch {
+    return false;
+  }
 }
 
 const corsOptions = {
-  origin: (origin, cb) => cb(null, isAllowedOrigin(origin)),
+  origin: (origin, cb) => {
+    if (isAllowedOrigin(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked for origin: ${origin}`));
+  },
   methods: ['POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
 };
 
-app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+
 
 app.use((req, _res, next) => {
   console.log('REQ', req.method, req.path, 'Origin:', req.headers.origin);
@@ -201,6 +217,7 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
 
