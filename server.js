@@ -17,10 +17,13 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 function isAllowedOrigin(origin) {
-  if (!origin) return false;
+  // Allow requests with no Origin header (Render health checks, direct browser hits)
+  if (!origin) return true;
+
   if (ALLOWED_ORIGINS.has(origin)) return true;
   if (origin.endsWith('.wixsite.com')) return true;
   if (origin.includes('wix.com')) return true;
+
   return false;
 }
 
@@ -194,4 +197,5 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
