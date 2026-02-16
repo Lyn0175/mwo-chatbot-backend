@@ -10,12 +10,32 @@ app.use(helmet());
 app.use(express.json({ limit: '50kb' }));
 
 // ✅ Allow only requests from your Wix site
-app.use(
-  cors({
-    origin: 'https://mwo-prague.org',
-    methods: ['POST'],
-  })
-);
+
+const ALLOWED_ORIGINS = new Set([
+  'https://mwo-prague.org',
+  'https://www.mwo-prague.org',
+]);
+
+function isAllowedOrigin(origin) {
+  if (!origin) return false;
+  if (ALLOWED_ORIGINS.has(origin)) return true;
+  if (origin.endsWith('.wixsite.com')) return true;
+  if (origin.includes('wix.com')) return true;
+  return false;
+}
+
+const corsOptions = {
+  origin: (origin, cb) => {
+    if (isAllowedOrigin(origin)) return cb(null, true);
+    return cb(new Error(`CORS blocked for origin: ${origin}`));
+  },
+  methods: ['POST', 'OPTIONS'],
+  allowedHeaders: ['Content-Type'],
+};
+
+app.options('*', cors(corsOptions));
+app.use(cors(corsOptions));
+
 
 app.use(
   rateLimit({
@@ -174,3 +194,4 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
