@@ -17,8 +17,11 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 function isAllowedOrigin(origin) {
-  // Allow requests with no Origin header (Render health checks, direct browser hits)
+  // Allow requests with no Origin header (health checks, etc.)
   if (!origin) return true;
+
+  // IMPORTANT: Wix HTML embed can send Origin: "null"
+  if (origin === 'null') return true;
 
   if (ALLOWED_ORIGINS.has(origin)) return true;
   if (origin.endsWith('.wixsite.com')) return true;
@@ -26,6 +29,7 @@ function isAllowedOrigin(origin) {
 
   return false;
 }
+
 
 const corsOptions = {
   origin: (origin, cb) => {
@@ -197,5 +201,6 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
