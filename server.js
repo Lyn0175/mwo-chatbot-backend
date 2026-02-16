@@ -17,24 +17,30 @@ const ALLOWED_ORIGINS = new Set([
 ]);
 
 function isAllowedOrigin(origin) {
-  // Allow requests with no Origin header (health checks, etc.)
+  // Allow requests with no Origin header (health checks, direct calls)
   if (!origin) return true;
 
-  // IMPORTANT: Wix HTML embed can send Origin: "null"
+  // Wix HTML embed can send Origin: "null"
   if (origin === 'null') return true;
 
+  // Your live domain
   if (ALLOWED_ORIGINS.has(origin)) return true;
+
+  // Wix-related origins (VERY common for HTML components)
   if (origin.endsWith('.wixsite.com')) return true;
+  if (origin.endsWith('.wixstatic.com')) return true;
+  if (origin.endsWith('.parastorage.com')) return true;
+
+  // Wix editor/manage domains
   if (origin.includes('wix.com')) return true;
 
   return false;
 }
 
-
 const corsOptions = {
   origin: (origin, cb) => {
-    if (isAllowedOrigin(origin)) return cb(null, true);
-    return cb(new Error(`CORS blocked for origin: ${origin}`));
+    // IMPORTANT: do not throw an Error here, just allow/deny
+    return cb(null, isAllowedOrigin(origin));
   },
   methods: ['POST', 'OPTIONS'],
   allowedHeaders: ['Content-Type'],
@@ -42,7 +48,6 @@ const corsOptions = {
 
 app.options('*', cors(corsOptions));
 app.use(cors(corsOptions));
-
 
 app.use(
   rateLimit({
@@ -201,6 +206,7 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
 
