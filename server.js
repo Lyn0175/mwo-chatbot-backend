@@ -107,9 +107,7 @@ Office Hours:
 Monday to Friday, 9:00 AM – 5:00 PM
 Closed on weekends and public holidays.
 
-Phone: (+420) 244 401 147
 Email: info@mwo-prague.org
-Email: mwo_prague@dmw.gov.ph
 
 ──────────────────────────────
 OWWA INQUIRIES
@@ -173,10 +171,6 @@ Payment instructions emailed after complete docs are received.
 ──────────────────────────────
 HIRING OF FILIPINO WORKERS (EMPLOYERS/AGENCIES)
 ──────────────────────────────
-Notices:
-1) No placement fee collection for CZ/PL/LV/LT/EE.
-2) Masseuse/massage therapist accreditation is on hold.
-3) Applications submitted via email will no longer be reviewed.
 
 Employers must be accredited through a licensed Philippine Recruitment Agency (PRA) with valid DMW/POEA license.
 Direct hire is generally prohibited unless exempted.
@@ -190,7 +184,7 @@ Senovážné náměstí 992/8
 110 00 Prague 1 Czech Republic
 +420 244 401 147
 
-For questions: mwo_prague@dmw.gov.ph
+For questions: info@mwo-prague.org / prague@owwa.gov.ph
 `;
 
 app.post('/chat', async (req, res) => {
@@ -224,6 +218,7 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
 
