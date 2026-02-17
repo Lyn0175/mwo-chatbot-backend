@@ -148,12 +148,14 @@ If NOT returning to same employer OR not yet started working:
 Requirements:
 1) Employment Contract (English) signed by employer & worker; include date signed.
 2) Addendum to EC-Template signed by employer & worker.
-   If employer won’t sign: submit OFW Compulsory Insurance (with repatriation of remains).
+   If employer won’t sign: submit OFW Compulsory Insurance.
    For Filipino Truck/Bus drivers: signed Addendum for Filipino Truck/Bus Drivers.
 3) Passport bio + signature pages (pages 2 & 3), at least 6 months validity.
 4) Valid residence card / long-term residence permit / employee card / karta pobytu.
+5) Online Submission : Submit your documents through the official BM Contract Verification portal:
+  https://www.mwo-prague.org/bm-contractverification
 
-Latvia/Lithuania/Estonia:
+Poland/Latvia/Lithuania/Estonia:
 - Payslip OR bank transfer screenshot of last salary showing company name OR
 - SIGNED Certificate of Employment stating DATE employment started.
 
@@ -218,6 +220,7 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
 
