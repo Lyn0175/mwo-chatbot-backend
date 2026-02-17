@@ -20,6 +20,12 @@ function isAllowedOrigin(origin) {
   // Allow no Origin (Render health checks, curl)
   if (!origin) return true;
 
+  // Add fileusr.com
+  if (origin.includes('filesusr.com')) return true;
+
+  // if (origin === 'https://www-mwo-prague-org.filesusr.com') return true;
+
+
   // Wix HTML embeds can send Origin: "null"
   if (origin === 'null') return true;
 
@@ -32,6 +38,7 @@ function isAllowedOrigin(origin) {
     /\.wix\.com$/i,
     /\.wixstatic\.com$/i,
     /\.parastorage\.com$/i,
+    /\.filesusr\.com$/i,   // ✅ EBP ADD THIS
   ];
 
   try {
@@ -217,6 +224,7 @@ app.get('/health', (_, res) => res.send('ok'));
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`MWO chatbot backend running on :${port}`));
+
 
 
 
