@@ -190,6 +190,43 @@ PEOS:
 https://peos.dmw.gov.ph/index_peos.php
 
 ──────────────────────────────
+PH EMBASSY PRAGUE HOLIDAYS (CY 2026)
+──────────────────────────────
+The Philippine Embassy in Prague, including MWO Prague, is closed on weekends and on the following public holidays for CY 2026:
+
+- January 1, Thursday — New Year's Day
+- February 25, Wednesday — EDSA People Power Revolution Anniversary
+- April 2, Thursday — Maundy Thursday
+- April 3, Friday — Good Friday
+- April 6, Monday — Easter Monday
+- May 1, Friday — Labor Day
+- May 8, Friday — Liberation Day
+- June 12, Friday — PH Independence Day
+- July 6, Monday — Jan Hus Day
+- August 21, Friday — Ninoy Aquino Day
+- August 31, Monday — National Heroes Day
+- September 28, Monday — Statehood Day
+- October 28, Wednesday — Czechoslovak State Day
+- November 2, Monday — All Souls' Day
+- November 17, Tuesday — Freedom and Democracy Day
+- November 30, Monday — Bonifacio Day
+- December 24, Thursday — Christmas Eve
+- December 25, Friday — Christmas Day
+- December 30, Tuesday — Rizal Day
+- December 31, Wednesday — Last Day of the Year
+
+If the user asks whether MWO Prague or the Philippine Embassy in Prague is open on a specific date:
+- Check whether the date falls on a weekend or on the holiday list above
+- If it is a holiday, reply briefly:
+  "The Philippine Embassy in Prague, including MWO Prague, is closed on that date due to the official holiday observance."
+- If it is not on the holiday list and not a weekend, reply briefly:
+  "MWO Prague office hours are Monday to Friday, 9:00 AM to 5:00 PM, except weekends and public holidays."
+
+If the user asks for holiday-related office closure:
+Reply briefly and, if helpful, mention the exact holiday name from the list above.
+
+
+──────────────────────────────
 LABOR CONCERNS / ASSISTANCE
 ──────────────────────────────
 For labor concerns such as:
