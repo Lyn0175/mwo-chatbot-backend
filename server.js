@@ -73,7 +73,6 @@ const openai = new OpenAI({
 });
 
 // Digital Assistant System Instructions Start Here
-// For Additional Instructions please insert here carefully
 const SYSTEM_INSTRUCTIONS = `
 You are the official website assistant of Migrant Workers Office (MWO) Prague under the Philippine Embassy.
 
@@ -482,30 +481,6 @@ ASSISTANT BEHAVIOR RULES
 
 7. Never give long answers by default.
 8. If unsure, do not answer beyond the official information provided here.
-
-Examples of preferred style:
-- "You may apply here:
-https://www.mwo-prague.org/applyrenewalowwamembership"
-
-- "For BM Contract Verification, please use:
-https://www.mwo-prague.org/bm-contractverification"
-
-- "You may check the DMW Direct Hire portal here:
-https://onlineservices.dmw.gov.ph/OnlineServices/DirectHire/DirectHireDashboard.aspx"
-
-- "For labor concerns, please fill up the appropriate form first.
-
-If you are in Czech Republic, Estonia, or Latvia:
-https://docs.google.com/forms/d/e/1FAIpQLSe7ljSkm2CMXJhBatCVBXO0imJPBALLvqMH-xux5657qivT3Q/viewform
-
-If you are in Poland, Lithuania, or Ukraine:
-http://tinyurl.com/atneform2026
-
-You may also call:
-(+420) 244 401 147
-
-MWO Prague website:
-https://www.mwo-prague.org/"
 `;
 // Digital Assistant System Instructions Ends Here
 
@@ -542,9 +517,59 @@ function normalizeHistory(history) {
     .filter(Boolean);
 }
 
+function detectCategory(text = '') {
+  const t = text.toLowerCase();
+
+  if (/(owwa)/i.test(t)) return 'owwa';
+  if (/(bm|balik[\s-]?manggagawa|oec|contract verification)/i.test(t)) return 'bm';
+  if (/(direct hire)/i.test(t)) return 'direct_hire';
+  if (/(accreditation|job order|hire filipino worker|recruitment agency)/i.test(t)) return 'accreditation';
+  if (/(unpaid salary|unpaid wages|salary|wage|termination|transfer of employer|contract issue|workplace concern|welfare|assistance|abuse|harassment|complaint|legal)/i.test(t)) {
+    return 'welfare';
+  }
+
+  return 'general';
+}
+
+function detectEscalation(text = '') {
+  const t = text.toLowerCase();
+
+  const escalationPatterns = [
+    /unpaid salary/,
+    /unpaid wages/,
+    /salary problem/,
+    /wage problem/,
+    /abuse/,
+    /harassment/,
+    /maltreatment/,
+    /contract dispute/,
+    /contract issue/,
+    /termination/,
+    /transfer of employer/,
+    /legal advice/,
+    /complaint/,
+    /welfare/,
+    /assistance request/,
+    /please check my case/,
+    /case[-\s]?specific/,
+    /employer problem/,
+    /passport confiscat/,
+    /detention/,
+    /deportation/,
+  ];
+
+  return escalationPatterns.some((re) => re.test(t));
+}
+
 app.post('/chat', async (req, res) => {
   try {
-    const { message, history } = req.body;
+    const {
+      message,
+      history,
+      channel = 'web',
+      user_id = '',
+      metadata = {},
+    } = req.body || {};
 
     if (typeof message !== 'string' || message.trim().length === 0) {
       return res.status(400).json({ error: 'Missing message' });
@@ -567,8 +592,18 @@ app.post('/chat', async (req, res) => {
       max_output_tokens: 300,
     });
 
+    const reply = response.output_text || 'Please try again.';
+    const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
+
     return res.json({
-      reply: response.output_text || 'Please try again.',
+      reply,
+      category: detectCategory(detectionText),
+      needs_human: detectEscalation(`${message}\n${metadata?.subject || ''}`),
+      handoff_reason: detectEscalation(`${message}\n${metadata?.subject || ''}`)
+        ? 'Possible welfare, legal, complaint, or case-specific concern that requires human review.'
+        : '',
+      channel,
+      user_id,
     });
   } catch (err) {
     console.error('Chat error:', err);
