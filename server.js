@@ -83,6 +83,16 @@ Keep answers SHORT, clear, and action-oriented.
 When a user asks for a form, portal, appointment, verification, application, downloadable file, or official office page, provide the exact direct link first.
 Avoid long explanations unless the user asks for full steps.
 
+LANGUAGE PRIORITY RULE
+- Reply in the same language as the user's latest message.
+- If the user's latest message is in Filipino or Tagalog, reply fully in Filipino or Tagalog.
+- If the user's latest message is in English, reply fully in English.
+- If the user's latest message is mixed Filipino and English, reply in the dominant language of the latest message.
+- Never switch to English unless the user's latest message is mainly in English.
+- Follow the language of the latest user message more than earlier messages in the conversation.
+- All clarification questions must follow the same language rule.
+- Keep official links exactly as they are.
+
 ──────────────────────────────
 CONTEXT CONTROL
 ──────────────────────────────
@@ -482,6 +492,39 @@ function normalizeHistory(history) {
     .filter(Boolean);
 }
 
+function detectLanguage(text = '') {
+  const t = text.toLowerCase().trim();
+
+  if (!t) return 'english';
+
+  const tagalogMarkers = [
+    'po', 'opo', 'pwede', 'paano', 'kailangan', 'saan', 'kailan',
+    'magkano', 'ilang', 'gusto', 'naka', 'bakit', 'ano',
+    'kamusta', 'salamat', 'pa', 'lang', 'naman', 'ba', 'wala',
+    'meron', 'dito', 'dyan', 'iyan', 'iyon', 'ako', 'ikaw',
+    'namin', 'natin', 'ninyo', 'nyo', 'siya', 'na-submit', 'ano na'
+  ];
+
+  const englishMarkers = [
+    'how', 'what', 'where', 'when', 'can', 'please', 'apply',
+    'renew', 'salary', 'employer', 'contract', 'verification',
+    'office', 'open', 'closed', 'membership', 'direct hire', 'approved', 'status'
+  ];
+
+  let tagalogScore = 0;
+  let englishScore = 0;
+
+  for (const word of tagalogMarkers) {
+    if (t.includes(word)) tagalogScore++;
+  }
+
+  for (const word of englishMarkers) {
+    if (t.includes(word)) englishScore++;
+  }
+
+  return tagalogScore > englishScore ? 'filipino' : 'english';
+}
+
 function detectCategory(text = '') {
   const t = text.toLowerCase();
 
@@ -489,7 +532,7 @@ function detectCategory(text = '') {
   if (/(bm|balik[\s-]?manggagawa|oec|contract verification)/i.test(t)) return 'bm';
   if (/(direct hire)/i.test(t)) return 'direct_hire';
   if (/(accreditation|job order|hire filipino worker|recruitment agency)/i.test(t)) return 'accreditation';
-  if (/(unpaid salary|unpaid wages|salary|wage|termination|transfer of employer|contract issue|workplace concern|welfare|assistance|abuse|harassment|complaint|legal)/i.test(t)) {
+  if (/(unpaid salary|unpaid wages|salary problem|wage problem|termination|transfer of employer|contract issue|workplace concern|welfare|assistance|abuse|harassment|complaint|legal)/i.test(t)) {
     return 'welfare';
   }
 
@@ -545,11 +588,16 @@ app.post('/chat', async (req, res) => {
     }
 
     const safeHistory = normalizeHistory(history);
+    const detectedLanguage = detectLanguage(message);
 
     const response = await openai.responses.create({
       model: 'gpt-4.1-mini',
       input: [
         { role: 'system', content: SYSTEM_INSTRUCTIONS },
+        {
+          role: 'system',
+          content: `Detected language of the latest user message: ${detectedLanguage}. Reply in ${detectedLanguage === 'filipino' ? 'Filipino/Tagalog' : 'English'} unless the latest user message clearly uses another language.`
+        },
         ...safeHistory,
         { role: 'user', content: message.trim() },
       ],
@@ -557,7 +605,9 @@ app.post('/chat', async (req, res) => {
       max_output_tokens: 300,
     });
 
-    const reply = response.output_text || 'Please try again.';
+    const reply = response.output_text || (detectedLanguage === 'filipino'
+      ? 'Pakisubukan muli.'
+      : 'Please try again.');
     const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
 
     return res.json({
@@ -567,6 +617,7 @@ app.post('/chat', async (req, res) => {
       handoff_reason: detectEscalation(`${message}\n${metadata?.subject || ''}`)
         ? 'Possible welfare, legal, complaint, or case-specific concern that requires human review.'
         : '',
+      detected_language: detectedLanguage,
       channel,
       user_id,
     });
