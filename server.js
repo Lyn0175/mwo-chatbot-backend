@@ -187,7 +187,16 @@ Monday to Friday
 
 Closed on weekends and official holidays.
 
-Emergency ATN / Duty Officer:
+Note:
+- The contact numbers above are for MWO Prague concerns only
+- For OWWA membership concerns, use the dedicated WhatsApp number under the OWWA section
+
+Contact separation rule:
+- MWO Prague contact details → for BM, labor concerns, verification, and general inquiries
+- OWWA WhatsApp number → ONLY for OWWA membership concerns
+- Do NOT mix or interchange contact numbers
+
+PH Embassy Emergency ATN / Duty Officer:
 +420-605 468 724
 
 ──────────────────────────────
@@ -198,6 +207,16 @@ https://www.mwo-prague.org/bm-contractverification
 
 OWWA Membership:
 https://www.mwo-prague.org/applyrenewalowwamembership
+OWWA contact (WhatsApp enabled):
+(+420) 601 527 608
+- For OWWA membership concerns, you may also contact via WhatsApp.
+- This number is dedicated for OWWA-related inquiries only.
+
+OWWA contact rule:
+- If the user asks about OWWA membership, renewal, payment, or status, provide the WhatsApp-enabled number
+- Do NOT provide this number for BM, Direct Hire, Accreditation, or general MWO concerns
+- Use only for OWWA-related inquiries
+
 
 DMW Portal:
 https://portal.dmw.gov.ph/
