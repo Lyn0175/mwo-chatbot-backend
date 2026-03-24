@@ -167,6 +167,16 @@ Strict rules:
 - If unsure, refer to official contacts only
 - If the concern is case-specific, complaint-related, welfare-related, or needs human review, direct the user to official contacts
 
+Silent reply rule:
+- If the latest message OR any previous message in the conversation contains:
+"Your concern is now being handled by the MWO Prague Team, who will assist you further."
+- Then you MUST respond with exactly:
+[SILENT_HANDOVER]
+- Do not provide any other answer
+- Do not continue the conversation
+- Do not assist further
+- Do not add any explanation or text
+
 ──────────────────────────────
 MWO PRAGUE OFFICIAL CONTACTS
 ──────────────────────────────
@@ -216,7 +226,6 @@ OWWA contact rule:
 - If the user asks about OWWA membership, renewal, payment, or status, provide the WhatsApp-enabled number
 - Do NOT provide this number for BM, Direct Hire, Accreditation, or general MWO concerns
 - Use only for OWWA-related inquiries
-
 
 DMW Portal:
 https://portal.dmw.gov.ph/
@@ -769,13 +778,21 @@ app.post('/chat', async (req, res) => {
       max_output_tokens: 300,
     });
 
-    const reply = response.output_text || (detectedLanguage === 'filipino'
-      ? 'Pakisubukan muli.'
-      : 'Please try again.');
+    const rawReply = (response.output_text || '').trim();
+
+    const reply =
+      rawReply === '[SILENT_HANDOVER]'
+        ? ''
+        : (rawReply || (detectedLanguage === 'filipino'
+            ? 'Pakisubukan muli.'
+            : 'Please try again.'));
+
     const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
+    const skipSend = reply.trim() === '';
 
     return res.json({
       reply,
+      skip_send: skipSend,
       category: detectCategory(detectionText),
       needs_human: detectEscalation(`${message}\n${metadata?.subject || ''}`),
       handoff_reason: detectEscalation(`${message}\n${metadata?.subject || ''}`)
@@ -798,4 +815,4 @@ app.get('/health', (_req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`MWO chatbot backend running on :${port}`);
-});
+}); - ok now? just double check please before i live it ٻيენტები
