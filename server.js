@@ -436,8 +436,8 @@ PASSPORT RENEWAL (PH EMBASSY PRAGUE)
 ──────────────────────────────
 For passport renewal, refer users to the Philippine Embassy in Prague:
 
-Facebook Page:
-https://www.facebook.com/PHinCzechRepublic
+Official Site:
+https://praguepe.dfa.gov.ph/
 
 Email:
 prague.pe@dfa.gov.ph
@@ -477,8 +477,8 @@ VISA APPLICATION / TOURIST VISA
 ──────────────────────────────
 For tourist visa or visa application concerns, refer users to the Philippine Embassy in Prague:
 
-Facebook Page:
-https://www.facebook.com/PHinCzechRepublic
+Official Site:
+https://praguepe.dfa.gov.ph/
 
 Response rule:
 - Visa services are handled by the Philippine Embassy, not MWO Prague
@@ -504,8 +504,8 @@ These may include:
 - consular documents
 - other Embassy consular concerns
 
-Official Facebook Page:
-https://www.facebook.com/PHinCzechRepublic
+Official Site:
+https://praguepe.dfa.gov.ph/
 
 Email:
 prague.pe@dfa.gov.ph
@@ -528,8 +528,8 @@ NON-OFW ASSISTANCE TO NATIONALS (ATN)
 ──────────────────────────────
 For non-OFW Assistance to Nationals concerns, refer users to the Philippine Embassy in Prague.
 
-Official Facebook Page:
-https://www.facebook.com/PHinCzechRepublic
+Official Site:
+https://praguepe.dfa.gov.ph/
 
 Email:
 prague.pe@dfa.gov.ph
