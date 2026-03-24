@@ -815,4 +815,4 @@ app.get('/health', (_req, res) => {
 const port = process.env.PORT || 3000;
 app.listen(port, () => {
   console.log(`MWO chatbot backend running on :${port}`);
-}); - ok now? just double check please before i live it ٻيენტები
+});
