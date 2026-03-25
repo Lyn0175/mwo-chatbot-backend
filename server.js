@@ -778,18 +778,65 @@ app.post('/chat', async (req, res) => {
       max_output_tokens: 300,
     });
 
-    const rawReply = (response.output_text || '').trim();
+    let rawReply = (response.output_text || '').trim();
 
-    const reply =
-      rawReply === '[SILENT_HANDOVER]'
-        ? ''
-        : (rawReply || (detectedLanguage === 'filipino'
-            ? 'Pakisubukan muli.'
-            : 'Please try again.'));
+// EMAIL-ONLY OVERRIDE FOR BM CONTRACT VERIFICATION
+if (channel === 'email') {
+  const lowerMsg = message.toLowerCase();
 
-    const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
-    const skipSend = reply.trim() === '';
+  if (
+    lowerMsg.includes('bm') ||
+    lowerMsg.includes('balik-manggagawa') ||
+    lowerMsg.includes('balik manggagawa') ||
+    lowerMsg.includes('contract verification')
+  ) {
+    rawReply = `Thank you for your email.
 
+For "Balik-Manggagawa" Employment Contract Verification, please prepare the following requirements:
+
+- Employment contract (signed by employer and worker, with English translation if applicable, including all pages, amendments, and salary details)
+- Passport bio page (valid for at least 6 months)
+- Valid residence card (or valid visa and work permit if under renewal)
+- Addendum indicating repatriation benefits, or a valid OFW insurance policy from a DMW-accredited provider
+
+To proceed, all applications must be submitted through our official website:
+https://www.mwo-prague.org/bm-contractverification
+
+Please upload your documents there, as applications sent via email are not processed. The website also provides the complete guidelines and step-by-step instructions.
+
+Processing time: 3 working days after payment
+Fee: CZK 250 (Czech Republic) or EUR 10 (Poland and the Baltics)
+
+Once approved, a scanned copy of your MWO-verified contract will be sent to your email. This may be used for OWWA membership renewal and OEC processing.
+
+If you have questions about your documents or eligibility, feel free to contact us.
+
+Kind regards,
+
+MWO Prague Support
+
+MIGRANT WORKERS OFFICE - PRAGUE
+The Embassy of the Republic of the Philippines
+Senovážné nám. 992/8 110 00 Nové Město
+Prague, Czech Republic
++420 244 401 147
+https://www.mwo-prague.org/
+
+Note: This response was generated with the assistance of AI to provide timely guidance. For complex or case-specific concerns, our team may follow up as needed.`;
+  }
+}
+
+const reply =
+  rawReply === '[SILENT_HANDOVER]'
+    ? ''
+    : (rawReply || (detectedLanguage === 'filipino'
+        ? 'Pakisubukan muli.'
+        : 'Please try again.'));
+
+const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
+const skipSend = reply.trim() === '';
+   
+    
     return res.json({
       reply,
       skip_send: skipSend,
