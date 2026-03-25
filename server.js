@@ -811,18 +811,7 @@ Once approved, a scanned copy of your MWO-verified contract will be sent to your
 
 If you have questions about your documents or eligibility, feel free to contact us.
 
-Kind regards,
-
-MWO Prague Support
-
-MIGRANT WORKERS OFFICE - PRAGUE
-The Embassy of the Republic of the Philippines
-Senovážné nám. 992/8 110 00 Nové Město
-Prague, Czech Republic
-+420 244 401 147
-https://www.mwo-prague.org/
-
-Note: This response was generated with the assistance of AI to provide timely guidance. For complex or case-specific concerns, our team may follow up as needed.`;
+Kind regards,`;
   }
 }
 
