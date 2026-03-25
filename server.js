@@ -790,9 +790,7 @@ if (channel === 'email') {
     lowerMsg.includes('balik manggagawa') ||
     lowerMsg.includes('contract verification')
   ) {
-    rawReply = `Thank you for your email.
-
-For "Balik-Manggagawa" Employment Contract Verification, please prepare the following requirements:
+  rawReply = `For "Balik-Manggagawa" Employment Contract Verification, please prepare the following requirements:
 
 - Employment contract (signed by employer and worker, with English translation if applicable, including all pages, amendments, and salary details)
 - Passport bio page (valid for at least 6 months)
@@ -809,9 +807,7 @@ Fee: CZK 250 (Czech Republic) or EUR 10 (Poland and the Baltics)
 
 Once approved, a scanned copy of your MWO-verified contract will be sent to your email. This may be used for OWWA membership renewal and OEC processing.
 
-If you have questions about your documents or eligibility, feel free to contact us.
-
-Kind regards,`;
+If you have questions about your documents or eligibility, feel free to contact us.`;
   }
 }
 
