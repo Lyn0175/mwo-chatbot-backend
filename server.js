@@ -167,16 +167,6 @@ Strict rules:
 - If unsure, refer to official contacts only
 - If the concern is case-specific, complaint-related, welfare-related, or needs human review, direct the user to official contacts
 
-Silent reply rule:
-- If the latest message OR any previous message in the conversation contains:
-"Your concern is now being handled by the MWO Prague Team, who will assist you further."
-- Then you MUST respond with exactly:
-[SILENT_HANDOVER]
-- Do not provide any other answer
-- Do not continue the conversation
-- Do not assist further
-- Do not add any explanation or text
-
 ──────────────────────────────
 MWO PRAGUE OFFICIAL CONTACTS
 ──────────────────────────────
@@ -748,6 +738,28 @@ function detectEscalation(text = '') {
   return escalationPatterns.some((re) => re.test(t));
 }
 
+
+const HANDOFF_TEXT = 'A member of our MWO Prague team will assist you.';
+const LEGACY_HANDOFF_TEXT =
+  'Your concern is now being handled by the MWO Prague Team, who will assist you further.';
+
+function hasHandoffInHistory(history = []) {
+  return Array.isArray(history) && history.some((item) => {
+    const content = String(item?.content || '').toLowerCase();
+    return (
+      content.includes(HANDOFF_TEXT.toLowerCase()) ||
+      content.includes(LEGACY_HANDOFF_TEXT.toLowerCase())
+    );
+  });
+}
+
+function looksLikeRoutineInquiry(text = '') {
+  const t = text.toLowerCase();
+
+  return /(owwa|bm|balik[\s-]?manggagawa|oec|contract verification|direct hire|job order|licensed agenc|agency|accreditation|passport|visa|voter|holiday|office hours|open|closed|address|location|phone|email|website|apply|renew|requirements|status|processing|kailan|saan|paano|magkano|ilang|pwede|how|what|where|when)/i.test(t);
+}
+
+
 app.post('/chat', async (req, res) => {
   try {
     const {
@@ -824,22 +836,53 @@ const reply =
         ? 'Pakisubukan muli.'
         : 'Please try again.'));
 
+const escalationDetected = detectEscalation(`${message}\n${metadata?.subject || ''}`);
+const messengerChannel = String(channel).toLowerCase() === 'messenger';
+const handoffAlreadyShown = messengerChannel && hasHandoffInHistory(safeHistory);
+
+// Auto-resume only for Messenger:
+// - if handoff already happened
+// - latest message is no longer escalation
+// - latest message looks like a normal/routine inquiry
+const autoResumeToAI =
+  messengerChannel &&
+  handoffAlreadyShown &&
+  !escalationDetected &&
+  looksLikeRoutineInquiry(message);
+
+// needs_human logic:
+// - Messenger only
+// - first escalation triggers handoff
+const needsHuman =
+  messengerChannel &&
+  escalationDetected &&
+  !handoffAlreadyShown;
+
+// skip_send logic:
+// - explicit silent handover from model
+// - OR Messenger already handed off and still not ready to resume AI
+const skipSend =
+  reply.trim() === '' ||
+  (messengerChannel &&
+    handoffAlreadyShown &&
+    !autoResumeToAI);
+
 const detectionText = `${message}\n${metadata?.subject || ''}\n${reply}`;
-const skipSend = reply.trim() === '';
-   
+
+return res.json({
+  reply,
+  skip_send: skipSend,
+  category: detectCategory(detectionText),
+  needs_human: needsHuman,
+  handoff_reason: needsHuman
+    ? 'Possible welfare, legal, complaint, or case-specific concern that requires human review.'
+    : '',
+  detected_language: detectedLanguage,
+  channel,
+  user_id,
+});
+
     
-    return res.json({
-      reply,
-      skip_send: skipSend,
-      category: detectCategory(detectionText),
-      needs_human: detectEscalation(`${message}\n${metadata?.subject || ''}`),
-      handoff_reason: detectEscalation(`${message}\n${metadata?.subject || ''}`)
-        ? 'Possible welfare, legal, complaint, or case-specific concern that requires human review.'
-        : '',
-      detected_language: detectedLanguage,
-      channel,
-      user_id,
-    });
   } catch (err) {
     console.error('Chat error:', err);
     return res.status(500).json({ error: 'Server error' });
